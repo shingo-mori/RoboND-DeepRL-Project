@@ -52,7 +52,7 @@
 #define REWARD_WIN  10.0f
 #define REWARD_LOSS -10.0f
 #define ALPHA 0.4f
-#define STRICT_MODE true
+#define STRICT_MODE false
 
 // Define Object Names
 #define WORLD_NAME "arm_world"
@@ -68,7 +68,7 @@
 #define ANIMATION_STEPS 1000
 
 // Set Debug Mode
-#define DEBUG true 
+#define DEBUG false 
 
 // Lock base rotation DOF (Add dof in header file if off)
 #define LOCKBASE true
@@ -263,7 +263,7 @@ void ArmPlugin::onCollisionMsg(ConstContactsPtr &contacts)
 			bool won = true;
 #endif
 
-			rewardHistory = won ? REWARD_WIN : REWARD_LOSS;
+			rewardHistory = won ? REWARD_WIN : 0.5 * REWARD_LOSS;
 			newReward  = true;
 			endEpisode = true;
 			return;
@@ -588,10 +588,15 @@ void ArmPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
 
 				// compute the smoothed moving average of the delta of the distance to the goal
 				avgGoalDelta  = avgGoalDelta * ALPHA + (distDelta * (1 - ALPHA));
+
 				if ( avgGoalDelta > 0 )
 					rewardHistory = avgGoalDelta / distGoal;
 				else
-					rewardHistory = 0.01 * avgGoalDelta * distGoal;
+					rewardHistory = 0.1 * avgGoalDelta;
+				
+				if ( fabs(avgGoalDelta) < 0.01 )
+					rewardHistory -= distGoal;
+
 				newReward     = true;	
 			}
 
