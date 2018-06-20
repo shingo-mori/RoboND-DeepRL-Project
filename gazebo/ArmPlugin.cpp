@@ -52,6 +52,7 @@
 #define REWARD_WIN  10.0f
 #define REWARD_LOSS -10.0f
 #define ALPHA 0.4f
+#define STRICT_MODE true
 
 // Define Object Names
 #define WORLD_NAME "arm_world"
@@ -256,8 +257,11 @@ void ArmPlugin::onCollisionMsg(ConstContactsPtr &contacts)
 		bool collisionWithItem = strcmp(col1.c_str(), COLLISION_ITEM) == 0;
 		if ( collisionWithItem )
 		{
-			//bool won = strcmp(col2.c_str(), COLLISION_POINT) == 0;
+#if STRICT_MODE
+			bool won = strcmp(col2.c_str(), COLLISION_POINT) == 0;
+#else
 			bool won = true;
+#endif
 
 			rewardHistory = won ? REWARD_WIN : REWARD_LOSS;
 			newReward  = true;
