@@ -254,16 +254,21 @@ void ArmPlugin::onCollisionMsg(ConstContactsPtr &contacts)
 		const std::string& col1 = contacts->contact(i).collision1();
 		const std::string& col2 = contacts->contact(i).collision2();
 
-		bool collisionWithItem = strcmp(col1.c_str(), COLLISION_ITEM) == 0;
-		if ( collisionWithItem )
+		bool colWithItem = strcmp(col1.c_str(), COLLISION_ITEM) == 0;
+		if ( colWithItem )
 		{
-#if STRICT_MODE
-			bool won = strcmp(col2.c_str(), COLLISION_POINT) == 0;
-#else
-			bool won = true;
-#endif
+			bool colWithPoint = strcmp(col2.c_str(), COLLISION_POINT) == 0;
+			if ( STRICT_MODE )
+			{
+				rewardHistory = colWithPoint ?
+					 REWARD_WIN : 0.5f * REWARD_LOSS;
+			}
+			else
+			{	
+				float bonus = colWithPoint ? 2.0f : 1.0f;
+				rewardHistory = bonus * REWARD_WIN;
+			}
 
-			rewardHistory = won ? REWARD_WIN : 0.5 * REWARD_LOSS;
 			newReward  = true;
 			endEpisode = true;
 			return;
@@ -589,11 +594,7 @@ void ArmPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
 				// compute the smoothed moving average of the delta of the distance to the goal
 				avgGoalDelta  = avgGoalDelta * ALPHA + (distDelta * (1 - ALPHA));
 
-				if ( avgGoalDelta > 0 )
-					rewardHistory = avgGoalDelta / distGoal;
-				else
-					rewardHistory = 0.1 * avgGoalDelta;
-				
+				rewardHistory = 0.1 * avgGoalDelta;
 				if ( fabs(avgGoalDelta) < 0.01 )
 					rewardHistory -= distGoal;
 
