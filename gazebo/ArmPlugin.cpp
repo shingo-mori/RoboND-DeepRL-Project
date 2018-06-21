@@ -28,7 +28,7 @@
 #define GAMMA 0.9f
 #define EPS_START 0.9f
 #define EPS_END 0.001f
-#define EPS_DECAY 100
+#define EPS_DECAY 150
 
 /*
 / Tune the following hyperparameters
@@ -52,7 +52,7 @@
 #define REWARD_WIN  100.0f
 #define REWARD_LOSS -10.0f
 #define ALPHA 0.4f
-#define STRICT_MODE false
+#define STRICT_MODE true
 
 // Define Object Names
 #define WORLD_NAME "arm_world"
@@ -594,7 +594,9 @@ void ArmPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
 				// compute the smoothed moving average of the delta of the distance to the goal
 				avgGoalDelta  = avgGoalDelta * ALPHA + (distDelta * (1 - ALPHA));
 
-				rewardHistory = 2 * avgGoalDelta - 0.5 * episodeFrames / maxEpisodeLength;
+				rewardHistory = 2.0f * avgGoalDelta - 0.5f * episodeFrames / maxEpisodeLength;
+				if( fabs(avgGoalDelta) < 0.01f )
+					rewardHistory -= 0.5f;
 
 				newReward     = true;	
 			}
