@@ -40,7 +40,7 @@
 #define OPTIMIZER "Adam"
 #define LEARNING_RATE 0.1f
 #define REPLAY_MEMORY 10000
-#define BATCH_SIZE 256
+#define BATCH_SIZE 64
 #define USE_LSTM true
 #define LSTM_SIZE 256
 
@@ -49,10 +49,10 @@
 /
 */
 
-#define REWARD_WIN  10.0f
+#define REWARD_WIN  100.0f
 #define REWARD_LOSS -10.0f
 #define ALPHA 0.4f
-#define STRICT_MODE false
+#define STRICT_MODE true
 
 // Define Object Names
 #define WORLD_NAME "arm_world"
@@ -261,7 +261,7 @@ void ArmPlugin::onCollisionMsg(ConstContactsPtr &contacts)
 			if ( STRICT_MODE )
 			{
 				rewardHistory = colWithPoint ?
-					 REWARD_WIN : 0.5f * REWARD_LOSS;
+					 REWARD_WIN : REWARD_LOSS;
 			}
 			else
 			{	
@@ -594,9 +594,9 @@ void ArmPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
 				// compute the smoothed moving average of the delta of the distance to the goal
 				avgGoalDelta  = avgGoalDelta * ALPHA + (distDelta * (1 - ALPHA));
 
-				rewardHistory = 0.1 * avgGoalDelta;
-				if ( fabs(avgGoalDelta) < 0.01 )
-					rewardHistory -= distGoal;
+				rewardHistory = 2 * avgGoalDelta - 0.5 * episodeFrames / maxEpisodeLength;
+				if ( fabs(avgGoalDelta) < 0.01f )
+					rewardHistory -= 0.5;
 
 				newReward     = true;	
 			}
