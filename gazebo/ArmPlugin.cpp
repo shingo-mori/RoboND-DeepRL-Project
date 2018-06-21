@@ -27,8 +27,8 @@
 #define DEBUG_DQN false
 #define GAMMA 0.9f
 #define EPS_START 0.9f
-#define EPS_END 0.01f
-#define EPS_DECAY 200
+#define EPS_END 0.001f
+#define EPS_DECAY 100
 
 /*
 / Tune the following hyperparameters
@@ -52,7 +52,7 @@
 #define REWARD_WIN  100.0f
 #define REWARD_LOSS -10.0f
 #define ALPHA 0.4f
-#define STRICT_MODE true
+#define STRICT_MODE false
 
 // Define Object Names
 #define WORLD_NAME "arm_world"
@@ -595,8 +595,6 @@ void ArmPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
 				avgGoalDelta  = avgGoalDelta * ALPHA + (distDelta * (1 - ALPHA));
 
 				rewardHistory = 2 * avgGoalDelta - 0.5 * episodeFrames / maxEpisodeLength;
-				if ( fabs(avgGoalDelta) < 0.01f )
-					rewardHistory -= 0.5;
 
 				newReward     = true;	
 			}
