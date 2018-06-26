@@ -74,26 +74,28 @@ Hyperparameter & Value & Description \\
 \hline
 GAMMA & 0.9 (0.9) & Discount factor used in the Q-lerning \cite{Watkins92q-learning} update.
 
-The default value is kept because the most future reward (the reward of the arm touching the object) should be counted heavily. \\
-EPS\_START & 0.9 (0.9) & Initial value of \(\epsilon\) in \(\epsilon\)-greedy exploration. This value determines the initial probability of choosing an action randomly.
+Lowering the value makes the agent more greedy. The default is kept to prevent from not valuing the future rewards. \\
+EPS\_START & 0.9 (0.9) & Initial value of \(\epsilon\) in \(\epsilon\)-greedy exploration.
 
-Unchanged to encourage the agent to explore during the early episodes. \\
+Unchanged to encourage the agent to explore in a wide range during the early frames. \\
 EPS\_END & 0.001 (0.05) & Final value of \(\epsilon\) in \(\epsilon\)-greedy exploration.
 
-Lowered significantly, since the environment is deterministic and random exploration is no longer needed once the agent discovers a way. \\
+Lowered significantly. Since the environment is deterministic, random explorations are no longer needed once the agent discovers a path. \\
 EPS\_DECAY & (200) & Number of frames over which  \(\epsilon\) decays. \\
  & 100 & The EPS\_DECAY value for the first objective. The agent explores enough within 100 episodes for the first objective. \\
  & 150 & The EPS\_DECAY value for the second objective.  The agent explores enough within 150 episodes for the second objective. \\
 INPUT\_WIDTH & 64 (512) & Image width of the camera. \\
 INPUT\_HEIGHT & 64 (512) & Image height of the camera. \\
 LSTM\_SIZE & 256 (32) & Number of frames fed to LSTM \cite{Hochreiter:1997:LSM:1246443.1246450} in the DRQN model. \\
-OPTIMIZER & "Adam" ("None") & The name of the optimizer used to train the model. Adam \cite{DBLP:journals/corr/KingmaB14} is used to allow faster learning during the early episodes. \\
+OPTIMIZER & "Adam" ("None") & The name of the optimizer used for training.
+
+Adam \cite{DBLP:journals/corr/KingmaB14} is used to allow higher learning rates. \\
 LEARNING\_RATE & 0.1 (0.0) & Learning rate used by the optimizer.
 
-Changed to a high value to speedup the learning process. \\
+A large value is set to speedup the learning process. \\
 REPLAY\_MEMORY & 10000 (10000) & Number of recent frames stored for experience replay \cite{Zhan2016}.
 
-The default value of 10000 is enough to ensure randomeness in the sample distribution. \\
+The default value is enough to ensure randomness in the sample distribution. \\
 \end{tabular}
 \caption{List of hyperparameters}
 \label{tab:hyperparameters}
@@ -102,7 +104,7 @@ The default value of 10000 is enough to ensure randomeness in the sample distrib
 \section{Results}
 The reward function and hyperparameters are configured either for the first objective or for the second objective before conducting each experiment. With the configuration for the first objective, the accuracy of the arm touching the object recorded 96\% for 125 episodes, which meets the requirement. With the configuration for the second objective, the accuracy of only the gripper base touching the object recorded 81\% for 390 episodes, which also meets the requirement. The screen-shot of the results are shown in Figure \ref{fig:result}.
 
-Due to the large learning rate, the agent finds an optimal route quite quickly (within 20 episodes at the fastest). However, the performance after the convergence highly depends on the experiences from the early frames. Because the Adam optimizer decays its effective learning rate over time, experiences in the later frames does not change the network parameter as much as those in the earlier frames. This causes the overall accuracy very low (< 60\%) when the agent fails to find an optimal solution in the earlier stage). Changing the optimizer and learning rate and/or tuning the parameters for \(\epsilon\)-greedy exploration might solve this problem.
+Due to the large learning rate, the agent finds an optimal route quite quickly (within 20 episodes at the fastest). However, the performance after the convergence highly depends on the experiences in the early frames. Because the Adam optimizer decays its effective learning rate over time, experiences in the later frames does not change the network parameter as much as those in the earlier frames. This causes the overall accuracy very low (< 60\%) when the agent fails to find an optimal solution in the earlier stage). Changing the optimizer and learning rate and/or tuning the parameters for \(\epsilon\)-greedy exploration might solve this problem.
 
 \begin{figure}[htp]
   \centering
@@ -119,7 +121,7 @@ Due to the large learning rate, the agent finds an optimal route quite quickly (
 
 \clearpage
 \section{Future Work}
-Future works include tuning the hyperparameters to address the problem of dependence on the experiences of early frames, and deal with additional challenges such as randomizing the object position and increasing the arm's degree of freedom.
+Future works include tuning the hyperparameters to address the problem of dependence on the experiences in earlier frames, and deal with additional challenges such as randomizing the object position and increasing the arm's degree of freedom.
 
 \bibliographystyle{ieeetr}
 \bibliography{bib}
