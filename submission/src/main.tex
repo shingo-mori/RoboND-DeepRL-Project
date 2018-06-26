@@ -23,9 +23,9 @@
 This writeup addresses the rubric points for the fourth project of the Udacity Robotics Software Nanodegree Program Term 2.
 
 \section{Introduction}
-In this project, a robotic agent is created in a Gazebo environment and trained to touch the object of interest accurately within a certain amount of movements. The training is done in a reinforcement learning approach \cite{Sutton:1998:IRL:551283}, and the Deep Recurrent Q-Network (DRQN) \cite{Hausknecht2015}, a variant of the Deep Q-Network (DQN) \cite{Zhan2016}, is applied to determine the agent's action policy.
+In this project, a robotic agent is created in a Gazebo environment and trained to accurately touch an object of interest within a certain amount of movements. The training is done in a reinforcement learning approach \cite{Sutton:1998:IRL:551283}. The Deep Recurrent Q-Network (DRQN) \cite{Hausknecht2015}, a variant of the Deep Q-Network (DQN) \cite{Zhan2016}, is applied to determine the agent's action policy.
 
-The main task of this project is to define a reward function and tune hyperparameters to carry out the following two primary objectives.
+The main tasks in this project is to define a reward function and tune hyperparameters to carry out the following two primary objectives,
 
 \begin{enumerate}
     \item Have any part of the robot arm touch the object of interest, with at least a 90\% accuracy for a minimum of 100 runs.
@@ -43,27 +43,29 @@ The environment is composed of an object of interest, a robotic arm to touch the
 
 \section{Reward Function}
 \subsection{Action Command}
-The robotic arm has three revolute joints. The agent manipulates those joints by sending an action command every frame. In this project, there are two options we can choose for what action to send to control those joints. We can either send a velocity-control action to specify the angular velocity of a joint, or send an angle-control action to specify the angle offset of a joint.  The latter is chosen to achieve an accurate joint control. The agent can whether increase or decrease the joint angle, which sums up to the total number of 6 different possible action (3 joints x 2 directions).
+The arm has three revolute joints which are controlled by the agent sending an action command every frame. There are two options supplied for what type of action command to send. We can either send a velocity-control action command to specify the angular velocity of a joint, or send an angle-control action command to specify the angle offset of a joint. The latter is selected in this assignment to achieve an accurate joint control.
 
-The agent selects one of the possible action commands every frame. The selection is made by the action-value function of the DRQN or simply by a random choice based on an \(\epsilon\)-greedy exploration \cite{Zhan2016}. The behavior of the agent relies on the DQRN's parameter which is updated using the reward value fed to the agent.
+The angle-control command has two directions, increase or decrease. Hence, the  number of actions the agent can select sums up to 6 (3 joints x 2 directions).
 
 \subsection{Reward Value}
-We define winning and losing scenarios in which the episode terminates immediately and the function returns a reward value of \(r_w=100\) and \(r_l=-10\) for a winning case and a losing case, respectively. In the first objective, the agent wins when any part of the robot arm touches the object. In the second objective, the agent wins when only the gripper base of the robot arm touches the object, and loses if any other part touches the object. In the both cases, the agent loses when any part of the arm hits the ground or the number of frames elapsed exceeds a certain limit.
+The agent selects one of the actions every frame. The selection is made by the action-value function of the DRQN or simply by a random choice based on an \(\epsilon\)-greedy exploration \cite{Zhan2016}. For each frame the parameters of the DRQN are updated using a reward value calculated by the reward function.
 
-For each frame in an episode, the function returns a interim reward based on the current state of the agent. The agent gets a positive reward if the averaged distance between the gripper base and the object decreases. This encourages the agent to move its arm towards the object. Additionally, the agent gets a negative reward proportional to the number of frames elapsed, normalized by the maximum number of episodes. This forces the agent to finish an episode as fast as possible. Finally, a negative constant reward is fed to the agent if the change in the distance between the gripper base and the object is less than 10cm. This prevents the agent from selecting meaningless action during the early episodes. All the reward is multiplied by a certain coefficient. The following pseudo code shows the process of calculating interim reward.
+The reward function takes as input the last state of the environment and outputs the corresponding reward value. We define winning and losing scenarios in which the function returns a reward value of \(r_w=100\) and \(r_l=-10\), respectively. For the first objective, the agent wins when any part of the robot arm touches the object. For the second objective, the agent wins when only the gripper base of the robot arm touches the object, and loses if any other part touches it. In the both cases, the agent loses when any part of the arm hits the ground or the number of frames elapsed exceeds the limit value (100). If the agent wins or loses, the episode (sequence of frames) ends and a new episode starts with the environment reset to the initial state.
+
+For each frame the function returns a interim reward based on the latest state of the agent. The function returns a positive reward if the gripper base is approaching the object, and returns a negative reward proportional to the number of frames elapsed normalized by the maximum number of episodes. This encourages the agent to move towards the object and end the episode as fast as possible. Additionally, a negative reward is returned if the amount of change in the distance between the gripper base and the object is less than 10cm. This prevents the agent from selecting an action that does not yield any progress. All the reward is multiplied by a certain coefficient. The following pseudo code shows the process of calculating the interim reward.
 
 \begin{minted}{py}
 ALPHA = 0.4
 delta = lastGoalDistance - currentGoalDistance
 avgDelta = avgDelta * ALPHA + (delta * (1 - ALPHA))
 
-reward = 2.0f * avgDelta - 0.5 * currentEpisode / maxEpisode
+reward = 2.0f * avgDelta - 0.5 * currentEpisodeFrame / maxEpisodeFrame
 if abs(avgDelta) < 0.01:
 	reward -= 0.5
 \end{minted}
 
 \section{Hyperparameters}
-List of hyperparameters and descriptions are shown in Table \ref{tab:hyperparameters}.
+List of hyperparameters and corresponding descriptions are shown in Table \ref{tab:hyperparameters}.
 
 \begin{table}[htp]
 \centering
@@ -98,9 +100,9 @@ The default value of 10000 is enough to ensure randomeness in the sample distrib
 \end{table}
 
 \section{Results}
-The reward function and hyperparameters were configured either for the first objective or for the second objective before making an experiment. With the configuration for the first objective, the accuracy of the arm touching the object recorded an accuracy of 96\% for 125 episodes. This meets the requirement. With the configuration for the second objective, the accuracy of only the gripper base touching the object recorded an accuracy of 81\% for 390 episodes, which also meets the requirement. The screen-shot of the result for the first and second objectives are shown in Figure \ref{fig:result-objective1} and Figure \ref{fig:result-objective2}, respectively.
+The reward function and hyperparameters are configured either for the first objective or for the second objective before conducting each experiment. With the configuration for the first objective, the accuracy of the arm touching the object recorded 96\% for 125 episodes, which meets the requirement. With the configuration for the second objective, the accuracy of only the gripper base touching the object recorded 81\% for 390 episodes, which also meets the requirement. The screen-shot of the results are shown in Figure \ref{fig:result}.
 
-The agent finds an optimal route quite quickly (within 20 episodes at the fastest). This is due to the large learning rate. However, the final accuracy after the learning is converged highly depends on experiences in the early episodes. Because effective learning rate decays over time in the Adam optimizer, experiences after a certain number of episodes does not affect the performance as much as those in the earlier episodes. If the agent fails to find an otimal solution in the earlier stage, the overall accuracy is very low (< 60\%) due to the decay of learning rate. Changing the optimizer and learning rate and/or tuning the parameters for \(\epsilon\)-greedy exploration might solve this problem.
+Due to the large learning rate, the agent finds an optimal route quite quickly (within 20 episodes at the fastest). However, the performance after the convergence highly depends on the experiences from the early frames. Because the Adam optimizer decays its effective learning rate over time, experiences in the later frames does not change the network parameter as much as those in the earlier frames. This causes the overall accuracy very low (< 60\%) when the agent fails to find an optimal solution in the earlier stage). Changing the optimizer and learning rate and/or tuning the parameters for \(\epsilon\)-greedy exploration might solve this problem.
 
 \begin{figure}[htp]
   \centering
@@ -112,10 +114,12 @@ The agent finds an optimal route quite quickly (within 20 episodes at the fastes
   	\includegraphics[width=\textwidth]{result-objective2}
     \label{fig:result-objective2}}
   \caption{A screen shot of the result for each objective.}
+  \label{fig:result}
 \end{figure}
 
+\clearpage
 \section{Future Work}
-Future works include tuning the hyperparameters to address the problem of dependance to the experiences of early episodes, and deal with additional challenges such as randomizing the object position and increasing the arm's degree of freedom.
+Future works include tuning the hyperparameters to address the problem of dependence on the experiences of early frames, and deal with additional challenges such as randomizing the object position and increasing the arm's degree of freedom.
 
 \bibliographystyle{ieeetr}
 \bibliography{bib}
