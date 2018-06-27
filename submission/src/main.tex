@@ -104,7 +104,7 @@ The default value is enough to ensure randomness in the sample distribution. \\
 \section{Results}
 The reward function and hyperparameters are configured either for the first objective or for the second objective before conducting each experiment. With the configuration for the first objective, the accuracy of the arm touching the object recorded 96\% for 125 episodes, which meets the requirement. With the configuration for the second objective, the accuracy of only the gripper base touching the object recorded 81\% for 390 episodes, which also meets the requirement. The screen-shot of the results are shown in Figure \ref{fig:result}.
 
-Due to the large learning rate, the agent finds an optimal route quite quickly (within 20 episodes at the fastest). However, the performance after the convergence highly depends on the experiences in the early frames. Because the Adam optimizer decays its effective learning rate over time, experiences in the later frames does not change the network parameter as much as those in the earlier frames. This causes the overall accuracy very low (< 60\%) when the agent fails to find an optimal solution in the earlier stage). Changing the optimizer and learning rate and/or tuning the parameters for \(\epsilon\)-greedy exploration might solve this problem.
+Due to the large learning rate, the agent finds an optimal route quite quickly (within 20 episodes at the fastest). However, the performance after the convergence highly depends on the experiences in the early frames. Because the Adam optimizer decays its effective learning rate over time, experiences in the later frames does not change the network parameter as much as those in the earlier frames. This causes the overall accuracy very low (< 60\%) when the agent fails to find an optimal solution in the earlier stage. Changing the optimizer and learning rate and/or tuning the parameters for \(\epsilon\)-greedy exploration might solve this problem.
 
 \begin{figure}[htp]
   \centering
@@ -121,7 +121,9 @@ Due to the large learning rate, the agent finds an optimal route quite quickly (
 
 \clearpage
 \section{Future Work}
-Future works include tuning the hyperparameters to address the problem of dependence on the experiences in earlier frames, and deal with additional challenges such as randomizing the object position and increasing the arm's degree of freedom.
+Although the agent learns an optimal route quickly, it fails to find one if it does not explore enough in the earlier frames. This is due to the nature of \(\epsilon\)-greedy exploration. The EPS\_DECAY value can be increased to allow the agent for longer exploration. However this trades off the convergence speed. Future works include addressing the  problem of dependence on earlier frames by changing the EPS\_DECAY, OPTIMIZER, LEARNING\_RATE or other parameters. One may try to even change the reward function and/or the network architecture.
+
+Future works also include dealing with additional challenges such as randomizing the object position and/or increasing the arm's degree of freedom.
 
 \bibliographystyle{ieeetr}
 \bibliography{bib}
