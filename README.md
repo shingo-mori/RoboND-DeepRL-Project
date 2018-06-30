@@ -12,3 +12,6 @@ In this project, I built a robotic arm agent that uitlizes [Deep Q-Network](http
 For more details, a writeup is available [here](https://github.com/shingo-uzuki/RoboND-DeepRL-Project/blob/master/submission/RoboND-DeepRL-writeup.pdf).
 
 <img src="./submission/src/environment.jpg" width="400">
+
+## Note
+This is a mirrored repository originated from the [project](https://github.com/udacity/RoboND-DeepRL-Project) developed by Udacity.
