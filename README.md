@@ -1,11 +1,19 @@
+[![Udacity - Robotics NanoDegree Program](https://s3-us-west-1.amazonaws.com/udacity-robotics/Extra+Images/RoboND_flag.png)](https://www.udacity.com/robotics)
 
 # Deep RL Arm Manipulation
+The fourth project of the Udacity Robotics Software Nanodegree Program Term 2.
 
-This project is based on the Nvidia open source project "jetson-reinforcement" developed by [Dustin Franklin](https://github.com/dusty-nv). The goal of the project is to create a DQN agent and define reward functions to teach a robotic arm to carry out two primary objectives:
+The goal of the project is to create a [DQN](https://deepmind.com/research/dqn/) agent and define reward functions to teach a robotic arm to carry out two primary objectives:
 
 1. Have any part of the robot arm touch the object of interest, with at least a 90% accuracy.
 2. Have only the gripper base of the robot arm touch the object, with at least a 80% accuracy.
 
+The writeup for this project is available [here](https://github.com/shingo-uzuki/RoboND-DeepRL-Project/blob/master/submission/RoboND-DeepRL-writeup.pdf).
+
+### Note
+This project is based on the Nvidia open source project "jetson-reinforcement" developed by [Dustin Franklin](https://github.com/dusty-nv). 
+
+# Installation
 ## Building from Source (Nvidia Jetson TX2)
 
 Run the following commands from terminal to build the project from source:
@@ -106,8 +114,7 @@ WON! episode 112
 
 Internally, [`catch`](samples/catch/catch.cpp) is using the [`dqnAgent`](c/dqnAgent.h) API from our C++ library to implement the learning.
 
-
-## Project Environment
+# Usage
 
 To get started with the project environment, run the following:
 
