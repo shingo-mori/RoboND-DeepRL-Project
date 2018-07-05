@@ -116,7 +116,7 @@ Internally, [`catch`](samples/catch/catch.cpp) is using the [`dqnAgent`](c/dqnAg
 
 # Usage
 
-To get started with the project environment, run the following:
+Run the following to start the project environment:
 
 ``` bash
 $ cd RoboND-DeepRL-Project/build/x86_64/bin
